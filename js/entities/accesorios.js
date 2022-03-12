@@ -1,7 +1,7 @@
 "use strict";
 
-import { Product } from "../js/product.js";
-import { InvalidValueException } from "./errors.js";
+import { Product } from "./product.js";
+import { InvalidValueException } from "../errors.js";
 
 //Accesorios es una subclase de Product.
 export class Accesorios extends Product {

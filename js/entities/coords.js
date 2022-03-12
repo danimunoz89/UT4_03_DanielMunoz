@@ -1,5 +1,5 @@
 "use strict";
-import { EmptyValueException } from "./errors.js";
+import { EmptyValueException } from "../errors.js";
 
 export class Coords {
 

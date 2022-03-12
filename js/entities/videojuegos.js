@@ -1,7 +1,7 @@
 "use strict";
 
 import { Product } from "./product.js";
-import { InvalidValueException } from "./errors.js";
+import { InvalidValueException } from "../errors.js";
 
 //Videojuegos es una subclase de Product.
 export class Videojuegos extends Product {

@@ -1,15 +1,18 @@
 "use strict";
 
-import { EmptyValueException, valueIncludedException, valueNotIncludedException, nullException, InvalidValueException, InvalidTypeObjectException } from "./errors.js";
-import { Category } from "./category.js";
-import { Coords } from "./coords.js";
-import { Store } from "./store.js";
-import { Product } from "./product.js";
+import { EmptyValueException, valueIncludedException, valueNotIncludedException, InvalidRegexException, nullException, InvalidValueException, InvalidTypeObjectException } from "../errors.js";
+import { Accesorios } from "../entities/accesorios.js";
+import { Category } from "../entities/category.js";
+import { Consolas } from "../entities/consolas.js";
+import { Coords } from "../entities/coords.js";
+import { Product } from "../entities/product.js";
+import { Store } from "../entities/store.js";
+import { Videojuegos } from "../entities/videojuegos.js";
 
 class StoreHouse {
     //Creo una categoría y una tienda por defecto. Serán usadas
     //durante el ejercicio.
-    #defaultShop = new Store(789456, "Tienda Por Defecto", "calle falsa", 1231723, new Coords("213123", "2431234"));
+    #defaultShop = new Store(789456, "Tienda Por Defecto", "calle falsa", 1231723, new Coords("213123", "2431234"), "nada.jpg", "tiendaDefecto");
     #defaultCategory = new Category("Cat.Defecto", "Categoria Por Defecto");
     #nameStoreHouse;
     #shops;
@@ -224,7 +227,7 @@ class StoreHouse {
                 if (item.product === productToRemove) {
                     pos = index
                     auxCIF = item.store;
-                    elem.products.splice (pos, 1);
+                    elem.products.splice(pos, 1);
                 }
             });
         });
@@ -233,12 +236,12 @@ class StoreHouse {
         //a borrar.
         //Recojo la posición y realizo el borrado.
 
-       let pos2;
+        let pos2;
         this.#shops.forEach((elem) => {
             elem.products.forEach((item, index) => {
                 if (item.product === productToRemove.serialNumber) {
                     pos2 = index;
-                    elem.products.splice (pos2, 1);
+                    elem.products.splice(pos2, 1);
                 }
             });
             if (elem.shop.cif === auxCIF) {
@@ -402,7 +405,7 @@ class StoreHouse {
                             if (elem2.shop.cif === idStore) {
                                 for (const item2 of elem2.products) {
                                     if (item2.product === productSN) {
-                                        yield item.product.serialNumber + " : " + item.product.name + " : " + item2.quantity;
+                                        yield { serialNumber: item.product.serialNumber, name: item.product.name, quantity: item2.quantity, price: item.product.price, images: item.product.images };
                                     }
                                 }
                             }
@@ -445,7 +448,7 @@ class StoreHouse {
 
     //Permite eliminar una tienda del StoreHouse
     removeShop(shopToRemove) {
-        
+
         //Si shopToRemove es nulo, se lanzará una excepción.
         if (!shopToRemove) {
             throw new nullException("shopToRemove");
@@ -460,7 +463,7 @@ class StoreHouse {
         let cifDelete;
         let auxSN;
         let auxCantidad;
-        
+
         //Compruebo si la tienda está incluida o no.
         //Si la tienda está incluida, recojo su posición para
         //eliminarla posteriormente.
@@ -477,7 +480,7 @@ class StoreHouse {
                     auxCantidad = elem3.quantity;
                     this.#shops.forEach((elem2) => {
                         if (elem2.shop.cif === this.#defaultShop.cif) {
-                            elem2.products.push({ product: auxSN, quantity: auxCantidad});
+                            elem2.products.push({ product: auxSN, quantity: auxCantidad });
                         }
                     });
                 });
@@ -488,7 +491,7 @@ class StoreHouse {
         if (aux === -1) {
             throw new valueNotIncludedException("shopToRemove");
         }
-        
+
         //Borro la tienda.
         this.#shops.splice(aux, 1);
 
@@ -530,9 +533,74 @@ class StoreHouse {
                     if (item.product instanceof categoryProduct) {
                         yield item.product;
                     }
+                    else {
+                        yield item.product;
+                    }
                 }
             }
         }
+    }
+
+    //Función retornará un objeto Categoria en base un título
+    //de categoría que pase.
+    getCategory(title) {
+        let aux = -1;
+
+        this.#categoriesStoreHouse.forEach((elem, index) => {
+            if (elem.category.title === title) {
+                aux = index;
+            }
+        });
+
+        //En caso que no exista la categoria, lanzamos excepción.
+        if (aux === -1) {
+            throw new valueNotIncludedException("title");
+        }
+
+        return this.#categoriesStoreHouse[aux].category;
+    }
+
+    //Función retornará un objeto tienda en base un título
+    //de tienda que pase.
+    getShop(nombre) {
+
+        //Compruebo si la tienda está ya incluida
+        let aux = -1;
+        this.#shops.forEach((elem, index) => {
+            if (elem.shop.cif == nombre) {
+                aux = index;
+            }
+        });
+
+        //En caso que no exista la categoria, lanzamos excepción.
+        if (aux === -1) {
+            throw new valueNotIncludedException("nombre");
+        }
+
+        return this.#shops[aux].shop;
+    }
+
+    //Función retornará un objeto producto en base un título
+    //de producto que pase.
+    getProduct(name) {
+
+        let aux;
+        let obj;
+        this.#categoriesStoreHouse.forEach((elem) => {
+            elem.products.forEach((item, index) => {
+                if (item.product.name === name) {
+                    aux = index;
+                    obj = item.product;
+                }
+            });
+        });
+        
+        //En caso que no exista la categoria, lanzamos excepción.
+        if (aux === -1) {
+            throw new valueNotIncludedException("serialNumber");
+        }
+        
+        return obj;
     }
 }
 
@@ -543,20 +611,28 @@ class StoreHouse {
 const SHSingleton = (function () {
     let instantiated;
 
-    function init (nameStoreHouse) {
-        let createdSH = new StoreHouse (nameStoreHouse);
+    function init(nameStoreHouse) {
+        let createdSH = new StoreHouse(nameStoreHouse);
         return createdSH;
     }
 
     return {
-        getInstance: function (nameStoreHouse){
-            if(!instantiated) {
-                instantiated = init (nameStoreHouse);
+        getInstance: function (nameStoreHouse) {
+            if (!instantiated) {
+                instantiated = init(nameStoreHouse);
             }
             return instantiated;
         },
     };
 })();
+//Exporto el Singleton para poder crear el storeHouse
+export { SHSingleton };
 
-//Exporto el Singleton para poder crear el storeHouse en el testing.
-export {SHSingleton};
+export { EmptyValueException, valueIncludedException, valueNotIncludedException, InvalidRegexException, nullException, InvalidValueException, InvalidTypeObjectException } from "../errors.js";
+export { Accesorios } from "../entities/accesorios.js";
+export { Category } from "../entities/category.js";
+export { Consolas } from "../entities/consolas.js";
+export { Coords } from "../entities/coords.js";
+export { Product } from "../entities/product.js";
+export { Store } from "../entities/store.js";
+export { Videojuegos } from "../entities/videojuegos.js";

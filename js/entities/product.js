@@ -1,6 +1,6 @@
 "use strict";
 
-import { EmptyValueException, InvalidRegexException, InvalidValueException } from "./errors.js";
+import { EmptyValueException, InvalidRegexException, InvalidValueException } from "../errors.js";
 
 //Función que checkea el Serial Number (regex inventada por mi).
 function isSerialNumber(serialNumber) {

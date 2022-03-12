@@ -1,5 +1,5 @@
 "use strict";
-import { SHSingleton } from "./storeHouse.js";
+import SHSingleton from "./storeHouse.js";
 import { Videojuegos } from "./videojuegos.js";
 import { Consolas } from "./consolas.js";
 import { Accesorios } from "./accesorios.js";
