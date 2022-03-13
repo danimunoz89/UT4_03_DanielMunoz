@@ -83,6 +83,8 @@ class storeHouseController {
         this.#storeHouseView.bindProductsStoreList(this.handleProductsStoreList);
         this.#storeHouseView.bindProductsStoreMenuList(this.handleProductsStoreList);
         this.#storeHouseView.bindDetalleProductos(this.handleshowDetailsProducts);
+        this.#storeHouseView.bindProductosNuevaVentana(this.handleProductosNuevaVentana);
+        this.#storeHouseView.bindCerrarVentanas(this.handleCerrarVentana);
     }
 
     //Invoco loadSHSingletonObjects mediante el onLoad()
@@ -152,7 +154,26 @@ class storeHouseController {
         else if (producto instanceof Accesorios) {
             this.#storeHouseView.mostrarDetallesAccesorios(producto);
         }
+    }
 
+    //Recojo de bindProductosNuevaVentana el id del botón que pulsemos y con ello
+    //obtengo el objeto producto relacionado con ese nombre que recogemos en el id.
+    //Ese objeto, en función del tipo que sea, llamaremos a un mostraDetalles u otro.
+    handleProductosNuevaVentana = (nombre) => {
+        let producto = this.#storeHouseModel.getProduct(nombre);
+        if (producto instanceof Videojuegos) {
+            this.#storeHouseView.mostrarDetallesVideojuegosNuevaVentana(producto);
+        }
+        else if (producto instanceof Consolas) {
+            this.#storeHouseView.mostrarDetallesConsolasNuevaVentana(producto);
+        }
+        else if (producto instanceof Accesorios) {
+            this.#storeHouseView.mostrarDetallesAccesoriosNuevaVentana(producto);
+        }
+    }
+
+    handleCerrarVentana = (array) => {
+        this.#storeHouseView.cerrarVentanas(array);
     }
 }
 

@@ -1,11 +1,16 @@
 import { SHSingleton } from "./storeHouseModel.js";
 
+
+let websAbiertas = [];
 class storeHouseView {
+
     constructor() {
         //Contenedores HTML donde irán pintándose los elementos
         this.categories = $('#categoriasListadoNav');
         this.shops = $('#tiendasListadoNav');
         this.main = $('#cajonElementos');
+        this.nav = $('#botonCerrar');
+        
     }
 
     //Cuando el documento esté listo se llamará al handleInicio
@@ -96,7 +101,7 @@ class storeHouseView {
             }
         }
     }
-    
+
     //Cuando pulsemos en alguna de las opciones del nav categorias
     //recogeremos el id del botón y en función del mismo, mediante un switch,
     //le paso al handle el tipo de categoría para poder sacar el objeto categoria
@@ -128,16 +133,16 @@ class storeHouseView {
             handleProductsStoreList(id);
         });
     }
-    
+
     //Cuando pulse uno de los botones dinámicos generados que contengan el class
     //.botontienda se recoje el id que pasaré al handleProductsStoreList para poder obtener
     //el objeto tienda necesario para poder mostrar los productos asociados a la misma.
-    
+
     bindProductsStoreMenuList(handleProductsStoreList) {
-            $(this.main).on('click', ".botontienda", function () {
-                let id = $(this).attr("id");
-                handleProductsStoreList(id);
-            });
+        $(this.main).on('click', ".botontienda", function () {
+            let id = $(this).attr("id");
+            handleProductsStoreList(id);
+        });
     }
 
     //Esta función será la encargada de pintar en el main los productos incluidos
@@ -152,15 +157,20 @@ class storeHouseView {
                     <div class="card-body">
                         <h5 class="card-title text-center">${value.name}</h5>
                         <p class="card-text text-center">${value.price} €</p>
-                        <button type="button" class="btn btn-primary mx-auto d-block detallesProducto" id="${value.name}">
+                        <!-- Este botón me mostrará en la misma página la información del producto -->
+                        <button type="button" class="btn btn-primary mx-auto mb-3 d-block detallesProducto" id="${value.name}">
                             Ver Descripción
                         </button>
+                        <!-- Este botón me llevará a una página nueva mostrando la información del producto -->
+                        <button type="button" class="btn btn-primary mx-auto d-block detallesProductoPaginaNueva" id="${value.name}">
+                        Ver Descripción Página Nueva
+                        </button>
                     </div>
-                    </div>`
+                </div>`
             )
         }
     }
-    
+
     //Cuando pulse uno de los botones dinámicos generados que contengan el class
     //.detallesproducto se recoje el id que pasaré al handle para poder obtener
     //el objeto producto necesario para poder mostrar las descripciones de los productos.
@@ -230,7 +240,221 @@ class storeHouseView {
             </div>`
         )
     }
-}
 
+    //Cuando pulse uno de los botones dinámicos generados que contengan el class
+    //.detallesProductoPaginaNueva se recoje el id que pasaré al handleProductosNuevaVentana
+    //para poder obtener el objeto tienda necesario para poder mostrar 
+    //los productos asociados a la misma.
+    //Además, pusheo la ventana en el array websAbiertas para poder borrar las webs
+    //abiertas mas adelante.
+   
+    bindProductosNuevaVentana(handleProductosNuevaVentana) {
+        $(this.main).on('click', ".detallesProductoPaginaNueva", function () {
+            let nombre = $(this).attr("id");
+            handleProductosNuevaVentana(nombre);
+        });
+    }
+
+    mostrarDetallesVideojuegosNuevaVentana(products) {
+        let ventanaNueva = null;
+        
+        let titleID = "DescripcionProducto"+Math.random();
+        ventanaNueva = window.open("", titleID, "width=640, height=640, top=250, left=250, titlebar=yes, toolbar=no, menubar=no, location=no");
+
+        ventanaNueva.document.write(
+            `<!DOCTYPE html>
+            <html lang="es">
+            
+            <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link rel="stylesheet" href="css/normalize.css">
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+                <link rel="stylesheet" href="css/auxPage.css">
+                <title>Daniestore -- Página Auxiliar</title>
+            </head>
+            <body class="body">
+            
+                <!--Header-->
+                <header class="header">
+                    <a href="./index.html" class="header__logo">
+                        <img src="img/logobuenobuenobueno.png" class="menu" alt="logo" title="Inicio">
+                    </a>
+                </header>
+                        
+                <!--Cuerpo de la web-->
+                <main class="main">
+            
+                    <!--Parte Principal-->
+                    <div class=main__div>
+                    <div class="card" style="width: 18rem;">
+                    <img src="img/${products.images}"  alt="fotoProducto" title="${products.name}"
+                        class="w-50 mt-5 mx-auto d-block">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">${products.name}</h5>
+                        <p class="card-text text-center"><b>Número de Serie:</b> ${products.serialNumber}</p>
+                        <p class="card-text text-center"><b>Descripción:</b> ${products.description}</p>
+                        <p class="card-text text-center"><b>Género:</b> ${products.genero}</p>
+                        <p class="card-text text-center"><b>DLCs:</b> ${products.dlc}</p>
+                        <p class="card-text text-center"><b>Precio:</b> ${products.price} €</p>
+                        <p class="card-text text-center"><b>Impuestos:</b> ${products.tax} %</p>
+                    </div>
+                    </div>
+                    </div>
+            
+                </main>
+                
+                <script src="../js/storeHouse/storeHouseApp.js" type="module"></script>
+            </body>
+            
+            </html>`
+        )
+        websAbiertas.push(ventanaNueva);
+    }
+
+    mostrarDetallesConsolasNuevaVentana(products) {
+        let ventanaNueva = null;
+        
+        let titleID = "DescripcionProducto"+Math.random();
+        ventanaNueva = window.open("", titleID, "width=640, height=640, top=250, left=250, titlebar=yes, toolbar=no, menubar=no, location=no");
+
+        ventanaNueva.document.write(
+            `<!DOCTYPE html>
+            <html lang="es">
+            
+            <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link rel="stylesheet" href="css/normalize.css">
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+                <link rel="stylesheet" href="css/auxPage.css">
+                <title>Daniestore -- Página Auxiliar</title>
+            </head>
+            <body class="body">
+            
+                <!--Header-->
+                <header class="header">
+                    <a href="./index.html" class="header__logo">
+                        <img src="img/logobuenobuenobueno.png" class="menu" alt="logo" title="Inicio">
+                    </a>
+                </header>
+                       
+                <!--Cuerpo de la web-->
+                <main class="main">
+            
+                    <!--Parte Principal-->
+                    <div class=main__div>
+                    <div class="card" style="width: 18rem;">
+                    <img src="img/${products.images}"  alt="fotoProducto" title="${products.name}"
+                        class="w-50 mt-5 mx-auto d-block">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">${products.name}</h5>
+                        <p class="card-text text-center"><b>Número de Serie:</b> ${products.serialNumber}</p>
+                        <p class="card-text text-center"><b>Descripción:</b> ${products.description}</p>
+                        <p class="card-text text-center"><b>Tipo:</b> ${products.tipo}</p>
+                        <p class="card-text text-center"><b>Formato:</b> ${products.formato}</p>
+                        <p class="card-text text-center"><b>Precio:</b> ${products.price} €</p>
+                        <p class="card-text text-center"><b>Impuestos:</b> ${products.tax} %</p>
+                    </div>
+                    </div>
+                    </div>
+            
+                </main>
+                
+                <script src="../js/storeHouse/storeHouseApp.js" type="module"></script>
+            </body>
+            
+            </html>`
+        )
+        websAbiertas.push(ventanaNueva);
+    }
+
+    mostrarDetallesAccesoriosNuevaVentana(products) {
+        let ventanaNueva = null;
+        
+        let titleID = "DescripcionProducto"+Math.random();
+        ventanaNueva = window.open("", titleID, "width=640, height=640, top=250, left=250, titlebar=yes, toolbar=no, menubar=no, location=no");
+
+        ventanaNueva.document.write(
+            `<!DOCTYPE html>
+            <html lang="es">
+            
+            <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link rel="stylesheet" href="css/normalize.css">
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+                <link rel="stylesheet" href="css/auxPage.css">
+                <title>Daniestore -- Página Auxiliar</title>
+            </head>
+            <body class="body">
+            
+                <!--Header-->
+                <header class="header">
+                    <a href="./index.html" class="header__logo">
+                        <img src="img/logobuenobuenobueno.png" class="menu" alt="logo" title="Inicio">
+                    </a>
+                </header>
+                       
+                <!--Cuerpo de la web-->
+                <main class="main">
+            
+                    <!--Parte Principal-->
+                    <div class=main__div>
+                    <div class="card" style="width: 18rem;">
+                    <img src="img/${products.images}"  alt="fotoProducto" title="${products.name}"
+                        class="w-50 mt-5 mx-auto d-block">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">${products.name}</h5>
+                        <p class="card-text text-center"><b>Número de Serie:</b> ${products.serialNumber}</p>
+                        <p class="card-text text-center"><b>Descripción:</b> ${products.description}</p>
+                        <p class="card-text text-center"><b>Plataforma:</b> ${products.plataforma}</p>
+                        <p class="card-text text-center"><b>Color:</b> ${products.color}</p>
+                        <p class="card-text text-center"><b>Precio:</b> ${products.price} €</p>
+                        <p class="card-text text-center"><b>Impuestos:</b> ${products.tax} %</p>
+                    </div>
+                    </div>
+                    </div>
+            
+                </main>
+                
+                <script src="../js/storeHouse/storeHouseApp.js" type="module"></script>
+            </body>
+            
+            </html>`
+        )
+        
+        websAbiertas.push(ventanaNueva);
+    }
+    
+    //Cuando pulse el boton "Cerrar Ventanas" que contiene el ID
+    //#botonCerrar se recoje el array websAbiertas que pasaré al handleCerrarVentana
+    //y este pasará a su vez a cerrarVentanas()
+    //En cerrarVentanas recojo ese array que contendrá todas las ventanas abiertas
+    //Ese array lo recorro con un foreach y voy cerrando en orden cada una de las webs que he ido
+    //abriendo. Al finalizar, se limpia el array websAbiertas.
+
+    bindCerrarVentanas(handleCerrarVentana) { 
+        $("#botonCerrar").click(function () {
+            handleCerrarVentana(websAbiertas);
+        })
+    }
+
+    cerrarVentanas (array) {
+        array.forEach(element => {
+            element.close();
+        });
+        websAbiertas = []
+    }
+}
 
 export { storeHouseView };
