@@ -84,7 +84,7 @@ class storeHouseController {
         this.#storeHouseView.bindProductsStoreMenuList(this.handleProductsStoreList);
         this.#storeHouseView.bindDetalleProductos(this.handleshowDetailsProducts);
         this.#storeHouseView.bindProductosNuevaVentana(this.handleProductosNuevaVentana);
-        this.#storeHouseView.bindCerrarVentanas(this.handleCerrarVentana);
+        this.#storeHouseView.bindCerrarVentanas();
     }
 
     //Invoco loadSHSingletonObjects mediante el onLoad()
@@ -171,13 +171,7 @@ class storeHouseController {
             this.#storeHouseView.mostrarDetallesAccesoriosNuevaVentana(producto);
         }
     }
-
-    //Recojo de bindCerrarVentanas el array websAbiertas y lo paso
-    //a la función cerrarVentanas, que será la encargada de ir
-    //cerrando todas las ventanas de producto que he ido abriendo
-    handleCerrarVentana = (websAbiertas) => {
-        this.#storeHouseView.cerrarVentanas(websAbiertas);
-    }
+    
 }
 
 export { storeHouseController };

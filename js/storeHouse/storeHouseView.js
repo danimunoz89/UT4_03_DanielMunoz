@@ -1,14 +1,13 @@
 import { SHSingleton } from "./storeHouseModel.js";
-
-
-let websAbiertas = [];
 class storeHouseView {
+    
 
     constructor() {
         //Contenedores HTML donde irán pintándose los elementos
         this.categories = $('#categoriasListadoNav');
         this.shops = $('#tiendasListadoNav');
-        this.main = $('#cajonElementos');        
+        this.main = $('#cajonElementos');
+        this.websAbiertas = [];
     }
 
     //Cuando el documento esté listo se llamará al handleInicio
@@ -245,7 +244,7 @@ class storeHouseView {
     //los productos asociados a la misma.
     //Además, pusheo la ventana en el array websAbiertas para poder borrar las webs
     //abiertas mas adelante.
-   
+
     bindProductosNuevaVentana(handleProductosNuevaVentana) {
         $(this.main).on('click', ".detallesProductoPaginaNueva", function () {
             let nombre = $(this).attr("id");
@@ -255,8 +254,8 @@ class storeHouseView {
 
     mostrarDetallesVideojuegosNuevaVentana(products) {
         let ventanaNueva = null;
-        
-        let titleID = "DescripcionProducto"+Math.random();
+
+        let titleID = "DescripcionProducto" + Math.random();
         ventanaNueva = window.open("", titleID, "width=640, height=640, top=250, left=250, titlebar=yes, toolbar=no, menubar=no, location=no");
 
         ventanaNueva.document.write(
@@ -310,14 +309,14 @@ class storeHouseView {
             
             </html>`
         )
-        websAbiertas.push(ventanaNueva);
+        this.websAbiertas.push(ventanaNueva);
     }
 
     mostrarDetallesConsolasNuevaVentana(products) {
         let ventanaNueva = null;
-        
-        let titleID = "DescripcionProducto"+Math.random();
-        ventanaNueva = window.open("", titleID, "width=640, height=640, top=250, left=250, titlebar=yes, toolbar=no, menubar=no, location=no");
+
+        let titleID = "DescripcionProducto" + Math.random();
+        ventanaNueva = window.open("", titleID, "width=640, height=640, top=250, left=250, titlebar=yes");
 
         ventanaNueva.document.write(
             `<!DOCTYPE html>
@@ -370,13 +369,13 @@ class storeHouseView {
             
             </html>`
         )
-        websAbiertas.push(ventanaNueva);
+        this.websAbiertas.push(ventanaNueva);
     }
 
     mostrarDetallesAccesoriosNuevaVentana(products) {
         let ventanaNueva = null;
-        
-        let titleID = "DescripcionProducto"+Math.random();
+
+        let titleID = "DescripcionProducto" + Math.random();
         ventanaNueva = window.open("", titleID, "width=640, height=640, top=250, left=250, titlebar=yes, toolbar=no, menubar=no, location=no");
 
         ventanaNueva.document.write(
@@ -430,28 +429,22 @@ class storeHouseView {
             
             </html>`
         )
-        
-        websAbiertas.push(ventanaNueva);
+        this.websAbiertas.push(ventanaNueva);
     }
-    
+
     //Cuando pulse el boton "Cerrar Ventanas" que contiene el ID
-    //#botonCerrar se recoje el array websAbiertas que pasaré al handleCerrarVentana
-    //y este pasará a su vez a cerrarVentanas()
-    //En cerrarVentanas recojo ese array que contendrá todas las ventanas abiertas
+    //#botonCerrar se recoje el array websAbiertas que se va rellenando conforme se abren las ventanas
+    //con las descripciones de los productos.
     //Ese array lo recorro con un foreach y voy cerrando en orden cada una de las webs que he ido
     //abriendo. Al finalizar, se limpia el array websAbiertas.
 
-    bindCerrarVentanas(handleCerrarVentana) { 
-        $("#botonCerrar").click(function () {
-            handleCerrarVentana(websAbiertas);
+    bindCerrarVentanas() {
+        $("#botonCerrar").click( () => {
+            this.websAbiertas.forEach(element => {
+                element.close();
+            });
         })
-    }
-
-    cerrarVentanas (websAbiertas) {
-        websAbiertas.forEach(element => {
-            element.close();
-        });
-        websAbiertas = []
+        websAbiertas = [];
     }
 }
 
