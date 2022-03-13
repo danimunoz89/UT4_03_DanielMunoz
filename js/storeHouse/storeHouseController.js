@@ -172,8 +172,11 @@ class storeHouseController {
         }
     }
 
-    handleCerrarVentana = (array) => {
-        this.#storeHouseView.cerrarVentanas(array);
+    //Recojo de bindCerrarVentanas el array websAbiertas y lo paso
+    //a la función cerrarVentanas, que será la encargada de ir
+    //cerrando todas las ventanas de producto que he ido abriendo
+    handleCerrarVentana = (websAbiertas) => {
+        this.#storeHouseView.cerrarVentanas(websAbiertas);
     }
 }
 

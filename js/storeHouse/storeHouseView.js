@@ -8,9 +8,7 @@ class storeHouseView {
         //Contenedores HTML donde irán pintándose los elementos
         this.categories = $('#categoriasListadoNav');
         this.shops = $('#tiendasListadoNav');
-        this.main = $('#cajonElementos');
-        this.nav = $('#botonCerrar');
-        
+        this.main = $('#cajonElementos');        
     }
 
     //Cuando el documento esté listo se llamará al handleInicio
@@ -449,8 +447,8 @@ class storeHouseView {
         })
     }
 
-    cerrarVentanas (array) {
-        array.forEach(element => {
+    cerrarVentanas (websAbiertas) {
+        websAbiertas.forEach(element => {
             element.close();
         });
         websAbiertas = []
